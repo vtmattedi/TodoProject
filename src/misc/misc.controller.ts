@@ -1,5 +1,6 @@
 import { ApiOperation, ApiResponse, ApiTags } from "@nestjs/swagger";
-import { Controller, Get } from "@nestjs/common";
+import { Controller, Get, Res } from "@nestjs/common";
+import { Response } from 'express';
 // Handles Misc requests
 @ApiTags('Misc')
 @Controller()
@@ -17,6 +18,14 @@ export class MiscController {
     health(): string {
         return 'OK';
     }
-    
 
+    // If the user accesses the root path, redirect them to the API documentation
+    @Get('/')
+    @ApiOperation({
+        summary: 'Redirects to API documentation.',
+        description: 'Redirect tthe user to the API documentation (this).',
+    })
+    index(@Res() res: Response): void {
+        res.redirect('/api');
+    }
 }
