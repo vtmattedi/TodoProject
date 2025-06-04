@@ -6,7 +6,7 @@ import { User } from 'src/model/entities/user.entity';
 import { RefreshTokenService } from './refreshtoken.service';
 import { AuthController } from './auth.controller';
 import { UsersService } from '../users/users.service';
-import { RefreshTokenMiddleware } from './middleware/refreshtoken.middleware';
+import { RefreshTokenMiddleware } from '../middleware/refreshtoken.middleware';
 import { MiddlewareConsumer } from '@nestjs/common/interfaces';
 @Module({
   imports: [TypeOrmModule.forFeature([RefreshToken, User])],

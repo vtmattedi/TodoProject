@@ -24,14 +24,19 @@ export class AuthController {
     ) {
         //injected dependencies
     }
-    // Default error handler for all authentication related errors
+    
     defaultErrorHandler(error: Error): void {
         if (error instanceof HttpException) {
             // If an HttpException is thrown, re-throw it
             // let NestJS handle it by returning the error response
             throw error;
         }
-        console.warn('error type:', error.constructor.name);
+        console.warn('error occurred:', error.constructor.name);
+        if (process.env.LOG_ROUTING_ERRORS === 'true') {
+            // If we want to log non HttpExceptions
+            // This is useful for debugging purposes
+            console.error(error);
+        }
         if (error instanceof LoginError) {
             console.warn('Login error:', error.message);
             if (process.env.NODE_ENV === 'development') {

@@ -8,11 +8,12 @@ async function bootstrap() {
   console.log('\t\x1b[1mEnvironment:\x1b[0m', process.env.NODE_ENV);
   const app = await NestFactory.create(AppModule);
   const config = new DocumentBuilder()
-    .setTitle('VMC Todo - A Tasks APIe')
+    .setTitle('VMC Todo - A Tasks API')
     .setDescription('The todo API description')
     .setVersion('1.0')
     .addTag('Authentication', 'Auth Endpoints (Requires a refresh token expect login and register)')
     .addTag('Tasks', 'Tasks Endpoints (Requires an access token)')
+    .addTag('Misc', 'Utility Endpoints')
     .addBearerAuth()
     .build();
 

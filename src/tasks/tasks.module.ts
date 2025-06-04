@@ -4,7 +4,7 @@ import { MiddlewareConsumer, NestModule } from '@nestjs/common/interfaces';
 import { Task } from 'src/model/entities/tasks.entity';
 import { TasksService } from './tasks.service';
 import { TasksController } from './tasks.controller';
-import { AccessTokenMiddleware } from 'src/auth/middleware/accesstoken.middleware';
+import { AccessTokenMiddleware } from 'src/middleware/accesstoken.middleware';
 
 @Module({
   imports: [TypeOrmModule.forFeature([Task])],

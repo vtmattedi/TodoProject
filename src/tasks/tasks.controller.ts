@@ -15,6 +15,7 @@ import { BadResults } from 'src/common/decorators/badresponse.decorator';
 import { BadTaskAccessResult } from 'src/common/decorators/taskaccess.decorator';
 import { TaskDeleteDto } from './dtos/taskdelete.dto';
 import { EditTaskDto } from './dtos/edittask.dto';
+//Controller for managing tasks
 @Controller('tasks')
 @ApiBearerAuth()
 export class TasksController {
@@ -33,13 +34,18 @@ export class TasksController {
             // If an HttpException is thrown, re-throw it
             throw error;
         }
-        if (error instanceof DbMissSyncError) {
+        if (process.env.LOG_ROUTING_ERRORS === 'true') {
+            // If we want to log non HttpExceptions
+            // This is useful for debugging purposes
+            console.error(error);
+        }
+        if (error instanceof DbMissSyncError ) {
             //This is a fatal error we (porb.) should not recover
             // This means that:
             // 1. we called tasksService.amIOwner and it did not throw
             // any errors AND THEN:
             // 2. we called some other method that modifies the task but the task was not in the db.
-            // This is either because of some1 externally modifying the database
+            // This is either because of some1 externally modifying the database IN BETWEEN our calls
             // or we did not properly verify the task exists before modifying it
             console.warn('Task asserted in the database was modified.', error);
             throw error; // Rethrow the error to be handled by the global exception filter
@@ -224,7 +230,7 @@ export class TasksController {
         type: Number,
     })
     @ApiResponse({ status: HttpStatus.OK, description: 'The deleted task.', type: TaskDeleteDto })
-    async restoreTask(@Param('id', ParseIntPipe) taskId: number,@Body() body: { userId: number }): Promise<TaskDeleteDto> {
+    async restoreTask(@Param('id', ParseIntPipe) taskId: number, @Body() body: { userId: number }): Promise<TaskDeleteDto> {
         console.log('Restoring task with ID:', taskId, 'for user ID:', body.userId);
         try {
             await this.tasksService.amIOwner(taskId, body.userId, true); // Check if the user can restore the task

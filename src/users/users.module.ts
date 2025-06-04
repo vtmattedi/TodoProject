@@ -7,7 +7,7 @@ import { RefreshToken } from '../model/entities/refreshtokens.entity';
 import { RefreshTokenService } from 'src/auth/refreshtoken.service';
 @Module({
   imports: [TypeOrmModule.forFeature([User, RefreshToken])],
-  controllers: [],
+  controllers: [],// No controllers for UsersModule
   providers: [UsersService, RefreshTokenService],
 })
 export class UsersModule implements NestModule {
