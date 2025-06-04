@@ -1,0 +1,1992 @@
+type: spec.insomnia.rest/5.0
+name: Todo VMC
+meta:
+  id: wrk_394ca0fd1b4f42cb9fe9e6db79007830
+  created: 1748975743425
+  modified: 1748976179911
+  description: Backend Test
+collection:
+  - name: Misc
+    meta:
+      id: fld_6612de64ff134eb295dc7411d99773cf
+      created: 1749017099521
+      modified: 1749017235563
+      sortKey: -1749017099521
+      description: Outros Endpoints disponiveis.
+    children:
+      - url: "{{ _.protocol }}://{{ _.base_url }}/health"
+        name: Health Check
+        meta:
+          id: req_40346439f24c4187b7665a6cbc0c06cd
+          created: 1749017102579
+          modified: 1749017146952
+          isPrivate: false
+          sortKey: -1749017102579
+        method: GET
+        headers:
+          - name: User-Agent
+            value: insomnia/11.1.0
+        settings:
+          renderRequestBody: true
+          encodeUrl: true
+          followRedirects: global
+          cookies:
+            send: true
+            store: true
+          rebuildPath: true
+      - url: "{{ _.protocol }}://{{ _.base_url }}/api"
+        name: Swagger
+        meta:
+          id: req_0cddb36fce4e4dc2bd378b1f4b97a4bd
+          created: 1749017121208
+          modified: 1749017188115
+          isPrivate: false
+          sortKey: -1749017121208
+        method: GET
+        headers:
+          - name: User-Agent
+            value: insomnia/11.1.0
+        settings:
+          renderRequestBody: true
+          encodeUrl: true
+          followRedirects: global
+          cookies:
+            send: true
+            store: true
+          rebuildPath: true
+      - url: "{{ _.protocol }}://{{ _.base_url }}/api-json"
+        name: Swagger-Json
+        meta:
+          id: req_946d5e816dd8454ab105560313c44006
+          created: 1749017167767
+          modified: 1749017183741
+          isPrivate: false
+          sortKey: -1749017167767
+        method: GET
+        headers:
+          - name: User-Agent
+            value: insomnia/11.1.0
+        settings:
+          renderRequestBody: true
+          encodeUrl: true
+          followRedirects: global
+          cookies:
+            send: true
+            store: true
+          rebuildPath: true
+  - name: Basic
+    meta:
+      id: fld_56af57ed7adb4ce28862ef201b576bda
+      created: 1749058040681
+      modified: 1749062620853
+      sortKey: -1748997913154
+    children:
+      - name: Authentication
+        meta:
+          id: fld_a825f2a9a8914de785e054649fffb6c5
+          created: 1749066530742
+          modified: 1749066545677
+          sortKey: -1749066530742
+        children:
+          - url: "{{ _.protocol }}://{{ _.base_url }}/auth/register"
+            name: Register
+            meta:
+              id: req_7bd95d6e0d824445acf481de82e0384a
+              created: 1748983337546
+              modified: 1749072546474
+              isPrivate: false
+              sortKey: -1749072546414
+            method: POST
+            body:
+              mimeType: application/json
+              text: "{\r
+
+                \    \"username\": \"tester\",\r
+
+                \    \"email\": \"test@tes2t.com\",\r
+
+                \    \"password\": \"test1234\"\r
+
+                }"
+            headers:
+              - name: Content-Type
+                value: application/json
+            authentication:
+              type: bearer
+              prefix: "Bearer "
+              disabled: true
+            scripts:
+              preRequest: >+
+                //const insomnia.environment.get("variable_name");
+
+                // insomnia.request.addHeader({key: 'X-Header-Name', value:
+                'header_value' });
+
+              afterResponse: |+
+                insomnia.test("Response status code is 200", function () {
+                    insomnia.expect(insomnia.response.code).to.equal(201);
+                });
+
+
+                const jsonBody = insomnia.response.json();
+                insomnia.environment.set("refreshtoken",jsonBody.refreshToken);
+                insomnia.environment.set("accesstoken",jsonBody.accessToken);
+
+
+
+
+
+
+
+            settings:
+              renderRequestBody: true
+              encodeUrl: true
+              followRedirects: global
+              cookies:
+                send: true
+                store: true
+              rebuildPath: true
+          - url: "{{ _.protocol }}://{{ _.base_url }}/auth/token"
+            name: New Token
+            meta:
+              id: req_040ce0c7c63a4d6681958a42c480998f
+              created: 1748983337548
+              modified: 1749072566037
+              isPrivate: false
+              sortKey: -1749072546339
+            method: GET
+            authentication:
+              type: bearer
+              token: "{{ _.refreshtoken }}"
+            scripts:
+              afterResponse: "insomnia.test(\"Response status code is 200\", function () {\r
+
+                \    insomnia.expect(insomnia.response.code).to.equal(200);\r
+
+                });\r\n"
+            settings:
+              renderRequestBody: true
+              encodeUrl: true
+              followRedirects: global
+              cookies:
+                send: true
+                store: true
+              rebuildPath: true
+          - url: "{{ _.protocol }}://{{ _.base_url }}/auth/logout"
+            name: Logout
+            meta:
+              id: req_3edb51cdf2194483b61178cc0ab686bc
+              created: 1749072550287
+              modified: 1749072552186
+              isPrivate: false
+              sortKey: -1749072546314
+            method: POST
+            authentication:
+              type: bearer
+              disabled: false
+              token: "{{ _.refreshtoken }}"
+              prefix: Bearer
+            scripts:
+              afterResponse: "\r
+
+                insomnia.test(\"Response status code is 200\", function () {\r
+
+                \    insomnia.expect(insomnia.response.code).to.equal(201);\r
+
+                });\r\n"
+            settings:
+              renderRequestBody: true
+              encodeUrl: true
+              followRedirects: global
+              cookies:
+                send: true
+                store: true
+              rebuildPath: true
+          - url: "{{ _.protocol }}://{{ _.base_url }}/auth/login"
+            name: Login
+            meta:
+              id: req_dae66345f62245e586f58a89edccc360
+              created: 1749072555450
+              modified: 1749072558349
+              isPrivate: false
+              sortKey: -1749072546364
+            method: POST
+            body:
+              mimeType: application/json
+              text: "{\r
+
+                \    \"email\": \"test@tes2t.com\",\r
+
+                \    \"password\": \"test1234\"\r
+
+                }"
+            headers:
+              - name: Content-Type
+                value: application/json
+            scripts:
+              afterResponse: |-
+                
+                insomnia.test("Response status code is 200", function () {
+                    insomnia.expect(insomnia.response.code).to.equal(200);
+                });
+
+                const jsonBody = insomnia.response.json();
+                insomnia.environment.set("refreshtoken",jsonBody.refreshToken);
+                insomnia.environment.set("accesstoken",jsonBody.accessToken);
+            settings:
+              renderRequestBody: true
+              encodeUrl: true
+              followRedirects: global
+              cookies:
+                send: true
+                store: true
+              rebuildPath: true
+          - url: "{{ _.protocol }}://{{ _.base_url }}/auth/closeaccount"
+            name: Close Account
+            meta:
+              id: req_1a9ac283c6c44a10adeb0709ddaa5852
+              created: 1749072569505
+              modified: 1749072571577
+              isPrivate: false
+              sortKey: -1749072546214
+            method: DELETE
+            body:
+              mimeType: application/json
+              text: "{\r
+
+                \    \"email\": \"test@tes2t.com\",\r
+
+                \    \"password\": \"test1234\"\r
+
+                }"
+            headers:
+              - name: Content-Type
+                value: application/json
+            authentication:
+              type: bearer
+              prefix: Bearer
+              token: "{{ _.refreshtoken }}"
+            scripts:
+              afterResponse: "insomnia.test(\"Response status code is 200\", function () {\r
+
+                \    insomnia.expect(insomnia.response.code).to.equal(200);\r
+
+                });\r\n"
+            settings:
+              renderRequestBody: true
+              encodeUrl: true
+              followRedirects: global
+              cookies:
+                send: true
+                store: true
+              rebuildPath: true
+      - name: Tasks
+        meta:
+          id: fld_1ba489f9eeb0454bbaa32dbe5c14d5af
+          created: 1749072584884
+          modified: 1749072595288
+          sortKey: -1749072584884
+        children:
+          - url: "{{ _.protocol }}://{{ _.base_url }}/tasks/"
+            name: READ
+            meta:
+              id: req_9720b7d57fb74822ba8ca315fa1f9cd3
+              created: 1749072603260
+              modified: 1749072726833
+              isPrivate: false
+              sortKey: -1749072618264
+            method: GET
+            body:
+              mimeType: application/json
+            parameters:
+              - id: pair_4cbdc40c899f4dbf99f73e1ef23fe072
+                name: status
+                value: pending
+                disabled: false
+            headers:
+              - name: Content-Type
+                value: application/json
+            authentication:
+              type: bearer
+              token: "{{ _.accesstoken }}"
+              prefix: Bearer
+            scripts:
+              afterResponse: |+
+                insomnia.test("Response status code is 200", function () {
+                    insomnia.expect(insomnia.response.code).to.equal(200);
+                });
+
+
+            settings:
+              renderRequestBody: true
+              encodeUrl: true
+              followRedirects: global
+              cookies:
+                send: true
+                store: true
+              rebuildPath: true
+          - url: "{{ _.protocol }}://{{ _.base_url }}/tasks/"
+            name: CREATE
+            meta:
+              id: req_2e4408b5ad5d4f20b8f68def2c66ef9d
+              created: 1749072623587
+              modified: 1749072715186
+              isPrivate: false
+              sortKey: -1749072618364
+            method: POST
+            body:
+              mimeType: application/json
+              text: |-
+                {
+                	"title": "a Task",
+                	"description": "a task description"
+                }
+            headers:
+              - name: Content-Type
+                value: application/json
+            authentication:
+              type: bearer
+              prefix: Bearer
+              token: "{{ _.accesstoken }}"
+            scripts:
+              afterResponse: |+
+                insomnia.test("Response status code is 200", function () {
+                    insomnia.expect(insomnia.response.code).to.equal(201);
+                });
+                if (insomnia.response.code == 201)
+                	{
+                		const jsonBody = insomnia.response.json();
+                		insomnia.environment.set("taskId", jsonBody.data[0].id);
+                	}
+
+
+
+
+
+
+
+            settings:
+              renderRequestBody: true
+              encodeUrl: true
+              followRedirects: global
+              cookies:
+                send: true
+                store: true
+              rebuildPath: true
+          - url: "{{ _.protocol }}://{{ _.base_url }}/tasks/{{ _.taskId }}"
+            name: EDIT
+            meta:
+              id: req_cb30b3e03c404efcaf72f7ceaf2c147d
+              created: 1749072632595
+              modified: 1749072638283
+              isPrivate: false
+              sortKey: -1749072618064
+            method: PUT
+            body:
+              mimeType: application/json
+              text: |-
+                {
+                	"status": "finished"
+                }
+            headers:
+              - name: Content-Type
+                value: application/json
+            authentication:
+              type: bearer
+              token: "{{ _.accesstoken }}"
+              prefix: Bearer
+            scripts:
+              afterResponse: |+
+                insomnia.test("Response status code is 200", function () {
+                    insomnia.expect(insomnia.response.code).to.equal(200);
+                });
+
+
+                if (insomnia.response.code == 200)
+                	{
+                		insomnia.test("Expect coun to be 1", function () {
+                			const jsonBody = insomnia.response.json();
+                    	insomnia.expect(jsonBody.count).to.equal(1);
+                		});
+                	}
+
+
+
+
+
+
+            settings:
+              renderRequestBody: true
+              encodeUrl: true
+              followRedirects: global
+              cookies:
+                send: true
+                store: true
+              rebuildPath: true
+          - url: "{{ _.protocol }}://{{ _.base_url }}/tasks/{{ _.taskId }}"
+            name: DELETE
+            meta:
+              id: req_b1a43752d1814abbb747a6ccd155da86
+              created: 1749072643742
+              modified: 1749072646251
+              isPrivate: false
+              sortKey: -1749072617964
+            method: DELETE
+            body:
+              mimeType: application/json
+            headers:
+              - name: Content-Type
+                value: application/json
+            authentication:
+              type: bearer
+              token: "{{ _.accesstoken }}"
+              prefix: Bearer
+            scripts:
+              afterResponse: |+
+                insomnia.test("Response status code is 200", function () {
+                    insomnia.expect(insomnia.response.code).to.equal(200);
+                });
+
+
+
+            settings:
+              renderRequestBody: true
+              encodeUrl: true
+              followRedirects: global
+              cookies:
+                send: true
+                store: true
+              rebuildPath: true
+          - url: "{{ _.protocol }}://{{ _.base_url }}/tasks/deleted"
+            name: Read Deleted
+            meta:
+              id: req_1119c5ee931e499fb7bb39e7cce8826b
+              created: 1749072651923
+              modified: 1749072670521
+              isPrivate: false
+              sortKey: -1749072617939
+            method: GET
+            body:
+              mimeType: application/json
+            headers:
+              - name: Content-Type
+                value: application/json
+            authentication:
+              type: bearer
+              token: "{{ _.accesstoken }}"
+              prefix: Bearer
+            scripts:
+              afterResponse: |+
+                insomnia.test("Response status code is 200", function () {
+                    insomnia.expect(insomnia.response.code).to.equal(200);
+                });
+                if (insomnia.response.code == 200)
+                	{
+                		const jsonBody = insomnia.response.json();
+                		insomnia.environment.set("taskId", jsonBody.data[0].id);
+                			insomnia.test("Expect count to be 1", function () {
+                			const jsonBody = insomnia.response.json();
+                    	insomnia.expect(jsonBody.count).to.equal(1);
+                		});
+
+                	}
+
+
+            settings:
+              renderRequestBody: true
+              encodeUrl: true
+              followRedirects: global
+              cookies:
+                send: true
+                store: true
+              rebuildPath: true
+          - url: "{{ _.protocol }}://{{ _.base_url }}/tasks/restore/{{ _.taskId }}"
+            name: Restore Deleted
+            meta:
+              id: req_512b006e5e25409fad4059bc06a6fd4a
+              created: 1749072659509
+              modified: 1749072668715
+              isPrivate: false
+              sortKey: -1749072617914
+            method: PUT
+            body:
+              mimeType: application/json
+            headers:
+              - name: Content-Type
+                value: application/json
+            authentication:
+              type: bearer
+              token: "{{ _.accesstoken }}"
+              prefix: Bearer
+            scripts:
+              afterResponse: |
+                insomnia.test("Response status code is 200", function () {
+                    insomnia.expect(insomnia.response.code).to.equal(200);
+                });
+            settings:
+              renderRequestBody: true
+              encodeUrl: true
+              followRedirects: global
+              cookies:
+                send: true
+                store: true
+              rebuildPath: true
+  - name: Flow
+    meta:
+      id: fld_ce824307ebc24a55bc48d2d3e9ae2e07
+      created: 1749058061167
+      modified: 1749071824075
+      sortKey: -1749058061167
+    children:
+      - name: Authentication
+        meta:
+          id: fld_98e7df75a7fa44f999fbe412f7a125db
+          created: 1748983337545
+          modified: 1749058085695
+          sortKey: -1749058066440
+          description: |-
+            Teste de rotas de autenticação:
+
+            1. Cria um usuario.
+                
+            2. Faz logout.
+                
+            3. Faz login.
+                
+            4. Gera um novo token.
+                
+            5. Fecha a Conta.
+        children:
+          - url: "{{ _.protocol }}://{{ _.base_url }}/auth/logout"
+            name: Logout
+            meta:
+              id: req_3420a956fa5642bbabeec4d968801169
+              created: 1748983337547
+              modified: 1749013646954
+              isPrivate: false
+              sortKey: -1748983335569
+            method: POST
+            authentication:
+              type: bearer
+              disabled: false
+              token: "{{ _.refreshtoken }}"
+              prefix: Bearer
+            scripts:
+              afterResponse: "\r
+
+                insomnia.test(\"Response status code is 200\", function () {\r
+
+                \    insomnia.expect(insomnia.response.code).to.equal(201);\r
+
+                });\r\n"
+            settings:
+              renderRequestBody: true
+              encodeUrl: true
+              followRedirects: global
+              cookies:
+                send: true
+                store: true
+              rebuildPath: true
+          - url: "{{ _.protocol }}://{{ _.base_url }}/auth/login"
+            name: Login
+            meta:
+              id: req_d76ec6e0977642e696e80e2ef3c9b176
+              created: 1748983337548
+              modified: 1749010635745
+              isPrivate: false
+              sortKey: -1748983335568
+            method: POST
+            body:
+              mimeType: application/json
+              text: "{\r
+
+                \    \"email\": \"test@tes2t.com\",\r
+
+                \    \"password\": \"test1234\"\r
+
+                }"
+            headers:
+              - name: Content-Type
+                value: application/json
+            scripts:
+              afterResponse: |-
+                
+                insomnia.test("Response status code is 200", function () {
+                    insomnia.expect(insomnia.response.code).to.equal(200);
+                });
+
+                const jsonBody = insomnia.response.json();
+                insomnia.environment.set("refreshtoken",jsonBody.refreshToken);
+                insomnia.environment.set("accesstoken",jsonBody.accessToken);
+            settings:
+              renderRequestBody: true
+              encodeUrl: true
+              followRedirects: global
+              cookies:
+                send: true
+                store: true
+              rebuildPath: true
+          - url: "{{ _.protocol }}://{{ _.base_url }}/auth/closeaccount"
+            name: Close Account
+            meta:
+              id: req_8535350b76df46e5a7f2e5ddc6900d93
+              created: 1748983337549
+              modified: 1749013650255
+              isPrivate: false
+              sortKey: -1748983335566
+            method: DELETE
+            body:
+              mimeType: application/json
+              text: "{\r
+
+                \    \"email\": \"test@tes2t.com\",\r
+
+                \    \"password\": \"test1234\"\r
+
+                }"
+            headers:
+              - name: Content-Type
+                value: application/json
+            authentication:
+              type: bearer
+              prefix: Bearer
+              token: "{{ _.refreshtoken }}"
+            scripts:
+              afterResponse: "insomnia.test(\"Response status code is 200\", function () {\r
+
+                \    insomnia.expect(insomnia.response.code).to.equal(200);\r
+
+                });\r\n"
+            settings:
+              renderRequestBody: true
+              encodeUrl: true
+              followRedirects: global
+              cookies:
+                send: true
+                store: true
+              rebuildPath: true
+          - url: "{{ _.protocol }}://{{ _.base_url }}/auth/register"
+            name: Register
+            meta:
+              id: req_97dfd60746364bc2ae44fd04de4ede4c
+              created: 1749072543701
+              modified: 1749072543701
+              isPrivate: false
+              sortKey: -1748983335569.5
+            method: POST
+            body:
+              mimeType: application/json
+              text: "{\r
+
+                \    \"username\": \"tester\",\r
+
+                \    \"email\": \"test@tes2t.com\",\r
+
+                \    \"password\": \"test1234\"\r
+
+                }"
+            headers:
+              - name: Content-Type
+                value: application/json
+            authentication:
+              type: bearer
+              prefix: "Bearer "
+              disabled: true
+            scripts:
+              preRequest: >+
+                //const insomnia.environment.get("variable_name");
+
+                // insomnia.request.addHeader({key: 'X-Header-Name', value:
+                'header_value' });
+
+              afterResponse: |+
+                insomnia.test("Response status code is 200", function () {
+                    insomnia.expect(insomnia.response.code).to.equal(201);
+                });
+
+
+                const jsonBody = insomnia.response.json();
+                insomnia.environment.set("refreshtoken",jsonBody.refreshToken);
+                insomnia.environment.set("accesstoken",jsonBody.accessToken);
+
+
+
+
+
+
+
+            settings:
+              renderRequestBody: true
+              encodeUrl: true
+              followRedirects: global
+              cookies:
+                send: true
+                store: true
+              rebuildPath: true
+          - url: "{{ _.protocol }}://{{ _.base_url }}/auth/token"
+            name: New Token
+            meta:
+              id: req_5ed88f39bac047639962be4fc4d71ddc
+              created: 1749072563630
+              modified: 1749072563630
+              isPrivate: false
+              sortKey: -1748983335566.5
+            method: GET
+            authentication:
+              type: bearer
+              token: "{{ _.refreshtoken }}"
+            scripts:
+              afterResponse: "insomnia.test(\"Response status code is 200\", function () {\r
+
+                \    insomnia.expect(insomnia.response.code).to.equal(200);\r
+
+                });\r\n"
+            settings:
+              renderRequestBody: true
+              encodeUrl: true
+              followRedirects: global
+              cookies:
+                send: true
+                store: true
+              rebuildPath: true
+      - name: Tasks
+        meta:
+          id: fld_6ef25c45701645eaad1a312e1dfad734
+          created: 1749012490737
+          modified: 1749072600255
+          sortKey: -1749058066340
+        children:
+          - url: "{{ _.protocol }}://{{ _.base_url }}/tasks/"
+            name: READ - 0
+            meta:
+              id: req_c9c02c4e9de94012bd4770ed935e7fc2
+              created: 1749012529317
+              modified: 1749017792611
+              isPrivate: false
+              sortKey: -1749017254329
+            method: GET
+            body:
+              mimeType: application/json
+            headers:
+              - name: Content-Type
+                value: application/json
+            authentication:
+              type: bearer
+              token: "{{ _.accesstoken }}"
+              prefix: Bearer
+            scripts:
+              afterResponse: |+
+                insomnia.test("Response status code is 200", function () {
+                    insomnia.expect(insomnia.response.code).to.equal(200);
+                });
+
+                if (insomnia.response.code == 200)
+                	{
+                		insomnia.test("Expect count to be 0", function () {
+                			const jsonBody = insomnia.response.json();
+                    	insomnia.expect(jsonBody.count).to.equal(0);
+                		});
+                	}
+
+
+            settings:
+              renderRequestBody: true
+              encodeUrl: true
+              followRedirects: global
+              cookies:
+                send: true
+                store: true
+              rebuildPath: true
+          - url: "{{ _.protocol }}://{{ _.base_url }}/tasks/"
+            name: CREATE
+            meta:
+              id: req_d2b59e0a3ad94babbe97b5107fb63416
+              created: 1749012664463
+              modified: 1749017793530
+              isPrivate: false
+              sortKey: -1749017254316.5
+            method: POST
+            body:
+              mimeType: application/json
+              text: |-
+                {
+                	"title": "a Task",
+                	"description": "a task description"
+                }
+            headers:
+              - name: Content-Type
+                value: application/json
+            authentication:
+              type: bearer
+              prefix: Bearer
+              token: "{{ _.accesstoken }}"
+            scripts:
+              afterResponse: |+
+                insomnia.test("Response status code is 200", function () {
+                    insomnia.expect(insomnia.response.code).to.equal(201);
+                });
+                if (insomnia.response.code == 201)
+                	{
+                		const jsonBody = insomnia.response.json();
+                		insomnia.environment.set("taskId", jsonBody.data[0].id);
+                	}
+
+
+
+
+
+
+
+            settings:
+              renderRequestBody: true
+              encodeUrl: true
+              followRedirects: global
+              cookies:
+                send: true
+                store: true
+              rebuildPath: true
+          - url: "{{ _.protocol }}://{{ _.base_url }}/tasks/{{ _.taskId }}"
+            name: EDIT
+            meta:
+              id: req_5674364160fb4f4399a241fb255e0ebc
+              created: 1749012684521
+              modified: 1749017796233
+              isPrivate: false
+              sortKey: -1749017254305.5625
+            method: PUT
+            body:
+              mimeType: application/json
+              text: |-
+                {
+                	"status": "finished"
+                }
+            headers:
+              - name: Content-Type
+                value: application/json
+            authentication:
+              type: bearer
+              token: "{{ _.accesstoken }}"
+              prefix: Bearer
+            scripts:
+              afterResponse: |+
+                insomnia.test("Response status code is 200", function () {
+                    insomnia.expect(insomnia.response.code).to.equal(200);
+                });
+
+
+                if (insomnia.response.code == 200)
+                	{
+                		insomnia.test("Expect coun to be 1", function () {
+                			const jsonBody = insomnia.response.json();
+                    	insomnia.expect(jsonBody.count).to.equal(1);
+                		});
+                	}
+
+
+
+
+
+
+            settings:
+              renderRequestBody: true
+              encodeUrl: true
+              followRedirects: global
+              cookies:
+                send: true
+                store: true
+              rebuildPath: true
+          - url: "{{ _.protocol }}://{{ _.base_url }}/auth/register"
+            name: Register
+            meta:
+              id: req_0f7a9a4802d94b1ba5486e0485d3498b
+              created: 1749012709666
+              modified: 1749017874558
+              isPrivate: false
+              sortKey: -1749017254404
+            method: POST
+            body:
+              mimeType: application/json
+              text: |-
+                {
+                    "username": "anotherTest",
+                    "email": "anotherTest@tes2t.com",
+                    "password": "anotherTest1234"
+                }
+            headers:
+              - name: Content-Type
+                value: application/json
+            authentication:
+              type: none
+            scripts:
+              preRequest: >+
+                //const insomnia.environment.get("variable_name");
+
+                // insomnia.request.addHeader({key: 'X-Header-Name', value:
+                'header_value' });
+
+              afterResponse: >+
+                insomnia.test("Response status code is 201 or 400", function ()
+                {
+                   insomnia.expect(insomnia.response.code).to.be.oneOf([201,400]);
+                });
+
+
+                if (insomnia.response.code == 201)
+                	{
+                		const jsonBody = insomnia.response.json();
+                		insomnia.environment.set("refreshtoken",jsonBody.refreshToken);
+                		insomnia.environment.set("accesstoken",jsonBody.accessToken);
+                	}
+
+
+
+
+
+
+
+
+            settings:
+              renderRequestBody: true
+              encodeUrl: true
+              followRedirects: global
+              cookies:
+                send: true
+                store: true
+              rebuildPath: true
+          - url: "{{ _.protocol }}://{{ _.base_url }}/tasks/{{ _.taskId }}"
+            name: DELETE
+            meta:
+              id: req_d64170b4dfa34ac884d17d60ee52148a
+              created: 1749012761287
+              modified: 1749017797247
+              isPrivate: false
+              sortKey: -1749017254304.7812
+            method: DELETE
+            body:
+              mimeType: application/json
+            headers:
+              - name: Content-Type
+                value: application/json
+            authentication:
+              type: bearer
+              token: "{{ _.accesstoken }}"
+              prefix: Bearer
+            scripts:
+              afterResponse: |+
+                insomnia.test("Response status code is 200", function () {
+                    insomnia.expect(insomnia.response.code).to.equal(200);
+                });
+
+
+
+            settings:
+              renderRequestBody: true
+              encodeUrl: true
+              followRedirects: global
+              cookies:
+                send: true
+                store: true
+              rebuildPath: true
+          - url: "{{ _.protocol }}://{{ _.base_url }}/tasks/deleted"
+            name: Read Deleted
+            meta:
+              id: req_25029d09130945d5a7b1af9fc9ff8701
+              created: 1749012780300
+              modified: 1749017800049
+              isPrivate: false
+              sortKey: -1749017254304.1953
+            method: GET
+            body:
+              mimeType: application/json
+            headers:
+              - name: Content-Type
+                value: application/json
+            authentication:
+              type: bearer
+              token: "{{ _.accesstoken }}"
+              prefix: Bearer
+            scripts:
+              afterResponse: |+
+                insomnia.test("Response status code is 200", function () {
+                    insomnia.expect(insomnia.response.code).to.equal(200);
+                });
+                if (insomnia.response.code == 200)
+                	{
+                		const jsonBody = insomnia.response.json();
+                		insomnia.environment.set("taskId", jsonBody.data[0].id);
+                			insomnia.test("Expect count to be 1", function () {
+                			const jsonBody = insomnia.response.json();
+                    	insomnia.expect(jsonBody.count).to.equal(1);
+                		});
+
+                	}
+
+
+            settings:
+              renderRequestBody: true
+              encodeUrl: true
+              followRedirects: global
+              cookies:
+                send: true
+                store: true
+              rebuildPath: true
+          - url: "{{ _.protocol }}://{{ _.base_url }}/tasks/restore/{{ _.taskId }}"
+            name: Restore Deleted
+            meta:
+              id: req_de15436cd91742178ee22eb0eca5fb36
+              created: 1749012806358
+              modified: 1749017801029
+              isPrivate: false
+              sortKey: -1749017254304.0977
+            method: PUT
+            body:
+              mimeType: application/json
+            headers:
+              - name: Content-Type
+                value: application/json
+            authentication:
+              type: bearer
+              token: "{{ _.accesstoken }}"
+              prefix: Bearer
+            scripts:
+              afterResponse: |
+                insomnia.test("Response status code is 200", function () {
+                    insomnia.expect(insomnia.response.code).to.equal(200);
+                });
+            settings:
+              renderRequestBody: true
+              encodeUrl: true
+              followRedirects: global
+              cookies:
+                send: true
+                store: true
+              rebuildPath: true
+          - url: "{{ _.protocol }}://{{ _.base_url }}/auth/closeaccount"
+            name: Close Account
+            meta:
+              id: req_094bfeda11f044f2a749f825b7253a6d
+              created: 1749012850286
+              modified: 1749017803260
+              isPrivate: false
+              sortKey: -1749017254304.0244
+            method: DELETE
+            body:
+              mimeType: application/json
+              text: |-
+                {
+                    "email": "anotherTest@tes2t.com",
+                    "password": "anotherTest1234"
+                }
+            headers:
+              - name: Content-Type
+                value: application/json
+            authentication:
+              type: bearer
+              prefix: Bearer
+              token: "{{ _.refreshtoken }}"
+            scripts:
+              afterResponse: "insomnia.test(\"Response status code is 200\", function () {\r
+
+                \    insomnia.expect(insomnia.response.code).to.equal(200);\r
+
+                });\r\n"
+            settings:
+              renderRequestBody: true
+              encodeUrl: true
+              followRedirects: global
+              cookies:
+                send: true
+                store: true
+              rebuildPath: true
+          - url: "{{ _.protocol }}://{{ _.base_url }}/auth/login"
+            name: Login
+            meta:
+              id: req_834441f532894636b85cab4af250d50f
+              created: 1749012972317
+              modified: 1749053519833
+              isPrivate: false
+              sortKey: -1749017254354
+            method: POST
+            body:
+              mimeType: application/json
+              text: |-
+                {
+                    "email": "anotherTest@tes2t.com",
+                    "password": "anotherTest1234"
+                }
+            headers:
+              - name: Content-Type
+                value: application/json
+            authentication:
+              type: none
+            scripts:
+              afterResponse: |-
+                
+                insomnia.test("Response status code is 200", function () {
+                    insomnia.expect(insomnia.response.code).to.equal(200);
+                });
+
+                const jsonBody = insomnia.response.json();
+                insomnia.environment.set("refreshtoken",jsonBody.refreshToken);
+                insomnia.environment.set("accesstoken",jsonBody.accessToken);
+            settings:
+              renderRequestBody: true
+              encodeUrl: true
+              followRedirects: global
+              cookies:
+                send: true
+                store: true
+              rebuildPath: true
+          - url: "{{ _.protocol }}://{{ _.base_url }}/tasks/"
+            name: READ - 2
+            meta:
+              id: req_138b719fbed64625a82df92f41ab4b45
+              created: 1749013497038
+              modified: 1749017795344
+              isPrivate: false
+              sortKey: -1749017254307.125
+            method: GET
+            body:
+              mimeType: application/json
+            headers:
+              - name: Content-Type
+                value: application/json
+            authentication:
+              type: bearer
+              token: "{{ _.accesstoken }}"
+              prefix: Bearer
+            scripts:
+              afterResponse: |
+                insomnia.test("Response status code is 200", function () {
+                    insomnia.expect(insomnia.response.code).to.equal(200);
+                });
+
+                if (insomnia.response.code == 200)
+                	{
+                		insomnia.test("Expect count to be 2", function () {
+                			const jsonBody = insomnia.response.json();
+                    	insomnia.expect(jsonBody.count).to.equal(2);
+                		});
+                	}
+            settings:
+              renderRequestBody: true
+              encodeUrl: true
+              followRedirects: global
+              cookies:
+                send: true
+                store: true
+              rebuildPath: true
+          - url: "{{ _.protocol }}://{{ _.base_url }}/tasks/"
+            name: READ - 1
+            meta:
+              id: req_1e4d273364ca499caa5d38e2aab39f94
+              created: 1749016548548
+              modified: 1749017798087
+              isPrivate: false
+              sortKey: -1749017254304.3906
+            method: GET
+            body:
+              mimeType: application/json
+            headers:
+              - name: Content-Type
+                value: application/json
+            authentication:
+              type: bearer
+              token: "{{ _.accesstoken }}"
+              prefix: Bearer
+            scripts:
+              afterResponse: |
+                insomnia.test("Response status code is 200", function () {
+                    insomnia.expect(insomnia.response.code).to.equal(200);
+                });
+
+                if (insomnia.response.code == 200)
+                	{
+                		insomnia.test("Expect count to be 1", function () {
+                			const jsonBody = insomnia.response.json();
+                    	insomnia.expect(jsonBody.count).to.equal(1);
+                		});
+                	}
+            settings:
+              renderRequestBody: true
+              encodeUrl: true
+              followRedirects: global
+              cookies:
+                send: true
+                store: true
+              rebuildPath: true
+          - url: "{{ _.protocol }}://{{ _.base_url }}/tasks/"
+            name: READ - 2
+            meta:
+              id: req_7552f843abba4893b04169d546b64104
+              created: 1749016585239
+              modified: 1749017802258
+              isPrivate: false
+              sortKey: -1749017254304.0488
+            method: GET
+            body:
+              mimeType: application/json
+            headers:
+              - name: Content-Type
+                value: application/json
+            authentication:
+              type: bearer
+              token: "{{ _.accesstoken }}"
+              prefix: Bearer
+            scripts:
+              afterResponse: |
+                insomnia.test("Response status code is 200", function () {
+                    insomnia.expect(insomnia.response.code).to.equal(200);
+                });
+
+                if (insomnia.response.code == 200)
+                	{
+                		insomnia.test("Expect count to be 2", function () {
+                			const jsonBody = insomnia.response.json();
+                    	insomnia.expect(jsonBody.count).to.equal(2);
+                		});
+                	}
+            settings:
+              renderRequestBody: true
+              encodeUrl: true
+              followRedirects: global
+              cookies:
+                send: true
+                store: true
+              rebuildPath: true
+          - url: "{{ _.protocol }}://{{ _.base_url }}/tasks/"
+            name: CREATE
+            meta:
+              id: req_eaa5167bb0cb4682b1ce0e0ffca19076
+              created: 1749016653182
+              modified: 1749017794407
+              isPrivate: false
+              sortKey: -1749017254310.25
+            method: POST
+            body:
+              mimeType: application/json
+              text: |-
+                {
+                	"title": "a Task",
+                	"description": "a task description"
+                }
+            headers:
+              - name: Content-Type
+                value: application/json
+            authentication:
+              type: bearer
+              prefix: Bearer
+              token: "{{ _.accesstoken }}"
+            scripts:
+              afterResponse: |+
+                insomnia.test("Response status code is 200", function () {
+                    insomnia.expect(insomnia.response.code).to.equal(201);
+                });
+                if (insomnia.response.code == 201)
+                	{
+                		const jsonBody = insomnia.response.json();
+                		insomnia.environment.set("taskId", jsonBody.data[0].id);
+                	}
+
+
+
+
+
+
+
+            settings:
+              renderRequestBody: true
+              encodeUrl: true
+              followRedirects: global
+              cookies:
+                send: true
+                store: true
+              rebuildPath: true
+          - url: "{{ _.protocol }}://{{ _.base_url }}/tasks/"
+            name: READ - 1 Filter
+            meta:
+              id: req_c09aa1f5ac8845f4a3225f2360487a73
+              created: 1749020081011
+              modified: 1749021341165
+              isPrivate: false
+              sortKey: -1749017254305.1719
+            method: GET
+            body:
+              mimeType: application/json
+            parameters:
+              - id: pair_4b95598eaf364471b953063b5ea6773a
+                name: status
+                value: finished
+                disabled: false
+            headers:
+              - name: Content-Type
+                value: application/json
+            authentication:
+              type: bearer
+              token: "{{ _.accesstoken }}"
+              prefix: Bearer
+            scripts:
+              afterResponse: |
+                insomnia.test("Response status code is 200", function () {
+                    insomnia.expect(insomnia.response.code).to.equal(200);
+                });
+
+                if (insomnia.response.code == 200)
+                	{
+                		insomnia.test("Expect count to be 1", function () {
+                			const jsonBody = insomnia.response.json();
+                    	insomnia.expect(jsonBody.count).to.equal(1);
+                		});
+                	}
+            settings:
+              renderRequestBody: true
+              encodeUrl: true
+              followRedirects: global
+              cookies:
+                send: true
+                store: true
+              rebuildPath: true
+        authentication:
+          type: none
+cookieJar:
+  name: Default Jar
+  meta:
+    id: jar_157dde6cc7224ea2097abd02a72147bbf3ba8319
+    created: 1748975743438
+    modified: 1749058085693
+environments:
+  name: Base Environment
+  meta:
+    id: env_157dde6cc7224ea2097abd02a72147bbf3ba8319
+    created: 1748975743432
+    modified: 1749072527559
+    isPrivate: false
+  data:
+    base_url: localhost:3000
+    protocol: http
+spec:
+  contents:
+    openapi: 3.0.0
+    paths:
+      /auth/login:
+        post:
+          description: Attempts to log in a user using the credentials provided.
+          operationId: AuthController_login
+          requestBody:
+            required: true
+            content:
+              application/json:
+                schema:
+                  $ref: "#/components/schemas/LoginUserDto"
+          responses:
+            "200":
+              description: User logged in successfully.
+              content:
+                application/json:
+                  schema:
+                    $ref: "#/components/schemas/LoginResultDto"
+            "400":
+              description: Bad payload format.
+              content:
+                application/json:
+                  schema:
+                    $ref: "#/components/schemas/BadResponseDto"
+            "401":
+              description: User not authenticated.
+              content:
+                application/json:
+                  schema:
+                    $ref: "#/components/schemas/BadResponseDto"
+          summary: Logs in a user.
+          tags:
+            - Authentication
+      /auth/register:
+        post:
+          description: Registers a new user with the credentials provided. if successful
+            will also login the user.
+          operationId: AuthController_register
+          requestBody:
+            required: true
+            content:
+              application/json:
+                schema:
+                  $ref: "#/components/schemas/RegisterUserDto"
+          responses:
+            "201":
+              description: Creates user account and login.
+              content:
+                application/json:
+                  schema:
+                    $ref: "#/components/schemas/LoginResultDto"
+            "400":
+              description: Bad payload format.
+              content:
+                application/json:
+                  schema:
+                    $ref: "#/components/schemas/BadResponseDto"
+            "401":
+              description: User not authenticated.
+              content:
+                application/json:
+                  schema:
+                    $ref: "#/components/schemas/BadResponseDto"
+          summary: Register a new in a user.
+          tags:
+            - Authentication
+      /auth/logout:
+        post:
+          description: Logs out a user using the refreshToken provided. Can logout all the
+            user from all devices.
+          operationId: AuthController_logout
+          parameters:
+            - name: everywhere
+              required: false
+              in: query
+              description: If set to true, will log out from all devices. Default is false.
+              schema:
+                type: boolean
+          responses:
+            "200":
+              description: Successfully logged out.
+              content:
+                application/json:
+                  example:
+                    message: Logged out successfully from 1 devices
+                    everywhere: false
+            "400":
+              description: Bad payload format.
+              content:
+                application/json:
+                  schema:
+                    $ref: "#/components/schemas/BadResponseDto"
+            "401":
+              description: User not authenticated.
+              content:
+                application/json:
+                  schema:
+                    $ref: "#/components/schemas/BadResponseDto"
+          summary: Invalidate a users session.
+          tags:
+            - Authentication
+      /auth/token:
+        get:
+          description: Generates a new accessToken using the refreshToken.
+          operationId: AuthController_token
+          responses:
+            "200":
+              description: New Access Token Granted.
+              content:
+                application/json:
+                  schema:
+                    $ref: "#/components/schemas/LoginResultDto"
+            "400":
+              description: Bad payload format.
+              content:
+                application/json:
+                  schema:
+                    $ref: "#/components/schemas/BadResponseDto"
+            "401":
+              description: User not authenticated.
+              content:
+                application/json:
+                  schema:
+                    $ref: "#/components/schemas/BadResponseDto"
+            "403":
+              description: User does not have access to this resource.
+              content:
+                application/json:
+                  schema:
+                    $ref: "#/components/schemas/BadResponseDto"
+          summary: Generates a new accessToken.
+          tags:
+            - Authentication
+      /auth/closeaccount:
+        delete:
+          description: Permenently closes an account based on the Id of the refreshToken
+            and the user's credential. The credentials need to match the user's
+            id of the token. This deletes all data of the users in the DB
+            including valid refreshTokens and Tasks.
+          operationId: AuthController_closeAccount
+          responses:
+            "200":
+              description: Closes User's account and deletes his data from DB.
+              content:
+                application/json:
+                  schema:
+                    $ref: "#/components/schemas/LoginResultDto"
+            "400":
+              description: Bad payload format.
+              content:
+                application/json:
+                  schema:
+                    $ref: "#/components/schemas/BadResponseDto"
+            "401":
+              description: User not authenticated.
+              content:
+                application/json:
+                  schema:
+                    $ref: "#/components/schemas/BadResponseDto"
+            "403":
+              description: User does not have access to this resource.
+              content:
+                application/json:
+                  schema:
+                    $ref: "#/components/schemas/BadResponseDto"
+          summary: Permenently closes an account.
+          tags:
+            - Authentication
+      /tasks:
+        get:
+          description: Gets all tasks of the current user (expect deleted ones).
+          operationId: TasksController_getTasks
+          parameters:
+            - name: status
+              required: false
+              in: query
+              description: Filter tasks by status. If not provided or invalid status, all
+                tasks will be returned.
+              schema:
+                enum:
+                  - pending
+                  - finished
+                type: string
+          responses:
+            "200":
+              description: The user's tasks.
+            "400":
+              description: Bad payload format.
+              content:
+                application/json:
+                  schema:
+                    $ref: "#/components/schemas/BadResponseDto"
+            "401":
+              description: User not authenticated.
+              content:
+                application/json:
+                  schema:
+                    $ref: "#/components/schemas/BadResponseDto"
+          summary: Gets all tasks.
+          tags:
+            - Tasks
+        post:
+          description: Create a new Task with the data in the body of the request if
+            dueDate is not present it will be set to null, representing no due
+            date, However if it is present it must not be in the past.
+          operationId: TasksController_createTask
+          parameters:
+            - name: status
+              required: false
+              in: query
+              description: Filter tasks by status. If not provided or invalid status, all
+                tasks will be returned.
+              schema:
+                enum:
+                  - pending
+                  - finished
+                type: string
+          requestBody:
+            required: true
+            content:
+              application/json:
+                schema:
+                  $ref: "#/components/schemas/NewTaskDto"
+          responses:
+            "201":
+              description: The created task.
+              content:
+                application/json:
+                  schema:
+                    $ref: "#/components/schemas/TaskReturnDto"
+            "400":
+              description: Bad payload format.
+              content:
+                application/json:
+                  schema:
+                    $ref: "#/components/schemas/BadResponseDto"
+            "401":
+              description: User not authenticated.
+              content:
+                application/json:
+                  schema:
+                    $ref: "#/components/schemas/BadResponseDto"
+          summary: Creates a new Task.
+          tags:
+            - Tasks
+      /tasks/{id}:
+        put:
+          description: Edits the task with id provided in the path and the new values as
+            the request body. You only need to pass what you want to update but
+            at least one field must be present. If the user does not own the
+            task, it is marked as deleted or the task does not exists it will
+            return an error.
+          operationId: TasksController_updateTask
+          parameters:
+            - name: id
+              required: true
+              in: path
+              description: The ID of the task to update.
+              schema:
+                example: 1
+                type: number
+          requestBody:
+            required: true
+            content:
+              application/json:
+                schema:
+                  $ref: "#/components/schemas/EditTaskDto"
+          responses:
+            "200":
+              description: The edited task.
+              content:
+                application/json:
+                  schema:
+                    $ref: "#/components/schemas/TaskReturnDto"
+            "400":
+              description: Bad payload format.
+              content:
+                application/json:
+                  schema:
+                    $ref: "#/components/schemas/BadResponseDto"
+            "401":
+              description: User not authenticated.
+              content:
+                application/json:
+                  schema:
+                    $ref: "#/components/schemas/BadResponseDto"
+            "403":
+              description: User does not own this Task.
+              content:
+                application/json:
+                  schema:
+                    $ref: "#/components/schemas/BadResponseDto"
+            "404":
+              description: Task not found.
+              content:
+                application/json:
+                  schema:
+                    $ref: "#/components/schemas/BadResponseDto"
+          summary: Edits an existing task.
+          tags:
+            - Tasks
+        delete:
+          description: "Edits the task with id provideded in the path. "
+          operationId: TasksController_deleteTask
+          parameters:
+            - name: id
+              required: true
+              in: path
+              description: The ID of the task to delete.
+              schema:
+                example: 1
+                type: number
+          responses:
+            "200":
+              description: The deleted task.
+              content:
+                application/json:
+                  schema:
+                    $ref: "#/components/schemas/TaskDeleteDto"
+            "400":
+              description: Bad payload format.
+              content:
+                application/json:
+                  schema:
+                    $ref: "#/components/schemas/BadResponseDto"
+            "401":
+              description: User not authenticated.
+              content:
+                application/json:
+                  schema:
+                    $ref: "#/components/schemas/BadResponseDto"
+            "403":
+              description: User does not own this Task.
+              content:
+                application/json:
+                  schema:
+                    $ref: "#/components/schemas/BadResponseDto"
+            "404":
+              description: Task not found.
+              content:
+                application/json:
+                  schema:
+                    $ref: "#/components/schemas/BadResponseDto"
+          summary: Deletes an existing task.
+          tags:
+            - Tasks
+      /tasks/deleted:
+        get:
+          description: Gets all deleted tasks by the user.
+          operationId: TasksController_getdeletedTasks
+          responses:
+            "200":
+              description: The deleted tasks.
+              content:
+                application/json:
+                  schema:
+                    $ref: "#/components/schemas/TaskReturnDto"
+            "400":
+              description: Bad payload format.
+              content:
+                application/json:
+                  schema:
+                    $ref: "#/components/schemas/BadResponseDto"
+            "401":
+              description: User not authenticated.
+              content:
+                application/json:
+                  schema:
+                    $ref: "#/components/schemas/BadResponseDto"
+            "403":
+              description: User does not own this Task.
+              content:
+                application/json:
+                  schema:
+                    $ref: "#/components/schemas/BadResponseDto"
+            "404":
+              description: Task not found.
+              content:
+                application/json:
+                  schema:
+                    $ref: "#/components/schemas/BadResponseDto"
+          summary: Gets the deleted tasks.
+          tags:
+            - Tasks
+      /tasks/restore/{id}:
+        put:
+          description: Restores a deleted task by the task ID provided in the path. If the
+            Task was not deleted if has no effect.
+          operationId: TasksController_restoreTask
+          parameters:
+            - name: id
+              required: true
+              in: path
+              description: The ID of the task to delete.
+              schema:
+                example: 1
+                type: number
+          responses:
+            "200":
+              description: The deleted task.
+              content:
+                application/json:
+                  schema:
+                    $ref: "#/components/schemas/TaskDeleteDto"
+            "400":
+              description: Bad payload format.
+              content:
+                application/json:
+                  schema:
+                    $ref: "#/components/schemas/BadResponseDto"
+            "401":
+              description: User not authenticated.
+              content:
+                application/json:
+                  schema:
+                    $ref: "#/components/schemas/BadResponseDto"
+            "403":
+              description: User does not own this Task.
+              content:
+                application/json:
+                  schema:
+                    $ref: "#/components/schemas/BadResponseDto"
+            "404":
+              description: Task not found.
+              content:
+                application/json:
+                  schema:
+                    $ref: "#/components/schemas/BadResponseDto"
+          summary: Restores a deleted task.
+          tags:
+            - Tasks
+      /health:
+        get:
+          description: Returns a simple "OK" message to indicate that the server is running.
+          operationId: MiscController_health
+          responses:
+            "200":
+              description: Server is running.
+          summary: Check server health
+          tags:
+            - Misc
+      /:
+        get:
+          description: Redirect tthe user to the API documentation (this).
+          operationId: MiscController_index
+          responses:
+            "302":
+              description: Redirects to the API documentation.
+          summary: Redirects to API documentation.
+          tags:
+            - Misc
+    info:
+      title: VMC Todo - A Tasks API
+      version: "1.0"
+    tags:
+      - name: Authentication
+        description: Auth Endpoints (Requires a refresh token expect login and register)
+      - name: Tasks
+        description: Tasks Endpoints (Requires an access token)
+      - name: Misc
+        description: Utility Endpoints
+    components:
+      securitySchemes:
+        bearer:
+          scheme: bearer
+          bearerFormat: JWT
+          type: http
+      schemas:
+        LoginUserDto:
+          type: object
+          properties:
+            email:
+              type: string
+              description: User email address
+              example: user@provider.com
+            password:
+              type: string
+              example: password123
+              description: User password
+          required:
+            - email
+            - password
+        LoginResultDto:
+          type: object
+          properties:
+            userId:
+              type: number
+              description: User's ID.
+              example: 1
+            accessToken:
+              type: string
+              example: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
+              description: Access token for the user.
+            refreshToken:
+              type: string
+              example: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
+              description: Refresh token for the user. (only on register & login).
+          required:
+            - userId
+            - accessToken
+        BadResponseDto:
+          type: object
+          properties:
+            message:
+              description: Array of Error messages.
+              example:
+                - User not found
+                - Invalid credentials
+                - Access denied
+              type: array
+              items:
+                type: string
+            statusCode:
+              type: number
+              description: HTTP status code.
+              example: 401
+            error:
+              type: string
+              description: HTTP code name.
+              example: Unauthorized
+          required:
+            - message
+            - statusCode
+            - error
+        RegisterUserDto:
+          type: object
+          properties:
+            username:
+              type: string
+              description: Username for the new user.
+              example: john_doe
+            email:
+              type: string
+              description: Email for the new user, cannot use an email already registered.
+              example: name@provider.com
+            password:
+              type: string
+              description: Password for the new user, must be at least 6 characters long.
+              example: password123
+          required:
+            - username
+            - email
+            - password
+        NewTaskDto:
+          type: object
+          properties:
+            title:
+              type: string
+              description: Task's title.
+              example: Get things done.
+            description:
+              type: string
+              description: Task's description.
+              example: "Do: fix small bug in the app."
+            dueDate:
+              format: date-time
+              type: string
+              description: Task's due date (converted using js constructor).
+              example: 01/10/2100
+          required:
+            - title
+            - description
+        TaskReturnDto:
+          type: object
+          properties:
+            count:
+              type: number
+              description: Total number of tasks returned.
+              example: 1
+            data:
+              description: Array of tasks returned.
+              example:
+                - id: 58
+                  title: a Task
+                  description: a task description
+                  createdAt: 2025-06-04T14:47:23.922Z
+                  updatedAt: 2025-06-04T14:47:23.922Z
+                  status: pending
+                  userId: 175
+              type: array
+              items:
+                type: string
+          required:
+            - count
+            - data
+        EditTaskDto:
+          type: object
+          properties:
+            description:
+              type: string
+              description: New description
+              example: The new description
+            dueDate:
+              format: date-time
+              type: string
+              description: New due date (converted using js Date constructor)
+              example: 2023-10-01T00:00:00Z
+            title:
+              type: string
+              description: New title
+              example: New Task Title
+            status:
+              type: string
+              description: New status
+              example: finished
+        TaskDeleteDto:
+          type: object
+          properties:
+            message:
+              type: string
+              description: The action on the task.
+              example: Task has been deleted.
+            count:
+              type: number
+              description: Total number of tasks returned.
+              example: 1
+          required:
+            - message
+            - count
+  meta:
+    id: spc_e20aecf934d943e280d97bbeec73e648
+    created: 1749066504040
+    modified: 1749066504040

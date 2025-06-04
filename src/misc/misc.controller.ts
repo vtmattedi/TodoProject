@@ -25,6 +25,10 @@ export class MiscController {
         summary: 'Redirects to API documentation.',
         description: 'Redirect tthe user to the API documentation (this).',
     })
+    @ApiResponse({
+        status: 302,
+        description: 'Redirects to the API documentation.',
+    })
     index(@Res() res: Response): void {
         res.redirect('/api');
     }

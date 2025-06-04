@@ -10,7 +10,7 @@ import { LoginError } from '../users/errors/login.error';
 import { authLogoutPipe } from './pipes/authlogout.pipes';
 import { RegisterError } from 'src/users/errors/register.error';
 import { RefreshTokenError } from './errors/refreshtoken.error';
-import { ApiBearerAuth, ApiOperation, ApiQuery, ApiResponse, ApiTags } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiBody, ApiOperation, ApiQuery, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { BadResults } from '../common/decorators/badresponse.decorator';
 import { BadAccessResult } from '../common/decorators/badaccess.decorator';
 
@@ -24,7 +24,7 @@ export class AuthController {
     ) {
         //injected dependencies
     }
-    
+
     defaultErrorHandler(error: Error): void {
         if (error instanceof HttpException) {
             // If an HttpException is thrown, re-throw it
@@ -158,7 +158,7 @@ export class AuthController {
         required: false,
         type: Boolean,
     })
-    @ApiResponse({ status: HttpStatus.OK, description: 'Successfully logged out.', example: { message: 'Logged out successfully from 1 devices', everywhere: false }})
+    @ApiResponse({ status: HttpStatus.OK, description: 'Successfully logged out.', example: { message: 'Logged out successfully from 1 devices', everywhere: false } })
     async logout(@Body() body: { userId: number, refreshToken: string }, @Query('everywhere', authLogoutPipe) everywhere: boolean, @Res({ passthrough: true }) response: Response): Promise<any> {
         //If there is a query parameter 'everywhere' and it is 'true'
         //logout all devices with this user's id
@@ -211,9 +211,12 @@ export class AuthController {
     @ApiOperation({ summary: 'Permenently closes an account.', description: 'Permenently closes an account based on the Id of the refreshToken and the user\'s credential. The credentials need to match the user\'s id of the token. This deletes all data of the users in the DB including valid refreshTokens and Tasks.' })
     @UsePipes(new ValidationPipe())
     @ApiBearerAuth()
+    @ApiBody({
+        type: LoginUserDto
+    })
     @BadAccessResult()
     @ApiResponse({ status: HttpStatus.OK, description: 'Closes User\'s account and deletes his data from DB.', type: LoginResultDto })
-    async closeAccount(@Req() request: Request, @Body() body: {refreshToken: string} & LoginUserDto, @Res({ passthrough: true }) response: Response): Promise<any> {
+    async closeAccount(@Req() request: Request, @Body() body: { refreshToken: string } & LoginUserDto, @Res({ passthrough: true }) response: Response): Promise<any> {
         console.log('Close account attempt with email:', body.email);
         // Delete all refresh tokens for the user
         try {
