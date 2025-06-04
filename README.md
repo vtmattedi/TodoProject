@@ -261,14 +261,14 @@ Isto também ocorre caso o usuário decida fechar sua conta (porém as *tasks* s
 
 Para criar uma conta, o usuário precia informar senha, email e nome e o email não pode já esta cadatrado. Após registrar com sucesso, ele será logado.
 
-Para fazer login o usuário precisa enviar email e senha. Se ele forem credenciais validas no sistema, o usuário recebera um  `accessToken` e `refreshToken` além de seu ID.
+Para fazer login o usuário precisa enviar email e senha. Se ele forem credenciais válidas no sistema, o usuário recebera um  `accessToken` e `refreshToken` além de seu ID.
 Ele pode com o `refreshToken` gerar novos `acessToken`.
 
 Para manipular as tarefas, o usuário precisa de um `accessToken`, mas além disso, ele precisa que o token tenha sido emitido com o ID igual ao dono da tarefa ao qual ele esta tentando manipular caso contrario ele recebera uma resposta http *Forbbiden*.
 
 Um usuário ver todas suas tarefas (com um filtro opcional sobre o status dela) ou todas suas tarefas deletadas.
 
-Um usuário pode criar uma tarefa enviando o titulo e a descrição e pode ou não enviar a data de termino da tarefa no formato `string` que vai ser parseada pelo `new Date()` do js, porém caso esta esteja presente ele tem que ser uma data [valida](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Date) e não pode ser no passado.
+Um usuário pode criar uma tarefa enviando o titulo e a descrição e pode ou não enviar a data de termino da tarefa no formato `string` que vai ser parseada pelo `new Date()` do js, porém caso esta esteja presente ele tem que ser uma data [válida](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Date) e não pode ser no passado.
 
 Um usuário pode editar tarefas utilizando ID da mesma e passando status, titulo, descrição ou data de termino(mesmas regras de criação se aplicam a data), nenhuma dessas opções é obrigatoria mas ao menos uma precisa estar presente
 
@@ -288,4 +288,4 @@ Para este projeto temos algumas melhorias que podem ser feitas:
 * Implementar um usúario admin que tenha acesso a outros usuários e tarefas.
 * ~~Fora do escopo de backend mas implementar um front, mesmo que, simples para que possa ser testado o aplicativo diretamete.~~
 * Escrever os testes unitarios pra as unidades mais importantes.
-* Trasnformar os refreshTokens em cookies ~~este era o projeto inicial mas não esteva funcionando com o insomnia apesar de funcionar no postman~~.
+* Transformar os refreshTokens em cookies ~~este era o projeto inicial mas não esteva funcionando com o insomnia apesar de funcionar no postman~~.
