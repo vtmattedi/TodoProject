@@ -1,5 +1,5 @@
 <h1 align="center" style="font-weight: Bold">:desktop_computer: Projeto TODO Backend. </h1>
-Projeto de backend para um aplicativo TODO, utilizando NestJS e typeORM.
+Projeto de backend para um aplicativo TODO, utilizando NestJS e TypeORM.
 
 * [Projeto](#projeto)
 * [Como instalar](#instalando-o-aplicativo)
@@ -210,7 +210,7 @@ curl -X 'DELETE' \
 
 O projeto foi desenvolvido utilizando o framework NestJS e foi escolhido trabalhar com o PostgreSQL pois existe uma ferramenta que permite pequenos bancos de dados gratuitos perfeitos para este tipo de testes, o [neon](https://neon.com). Durante o desenvolvimento foi testado tanto no banco de dados local quanto usando o neon.
 
-Como estamos no NestJS e para manter uma boa escalabilidade, foi decido por utilizar o [typeORM](https://docs.nestjs.com/recipes/sql-typeorm).
+Como estamos no NestJS e para manter uma boa escalabilidade, foi decido por utilizar o [TypeORM](https://docs.nestjs.com/recipes/sql-typeorm).
 
 Aplicação foi desenvolvida em 4 módulos:
 
@@ -239,7 +239,7 @@ Além disso, quando estamos em ambiente de desenvolvimento (`NODE_ENV: 'developm
 
 Durante a manipulação de tarefas, a requisção passa pelo *middleware* ou seja ele contém um `accessToken` válido, entretanto, o *controller* ainda é responsavél por checar se aquele usuário pode manipular aquela tarefa.
 
-Como estamos utilizando o typeORM, desde que não haja tabelas com os nomes `refreshtokens`, `users` e `tasks` no *database* utilizado o própio typeORM as cria porém caso elas existam isso causará um erro que deve ser manualmente resolvido, pois não faz sentido fazer uma *migration* que drop tabelas que não sabemos o conteúdo. Além disso o *schema* das tabelas esta disponível [aqui](/src/model/schema.sql).
+Como estamos utilizando o TypeORM, desde que não haja tabelas com os nomes `refreshtokens`, `users` e `tasks` no *database* utilizado o própio TypeORM as cria porém caso elas existam isso causará um erro que deve ser manualmente resolvido, pois não faz sentido fazer uma *migration* que drop tabelas que não sabemos o conteúdo. Além disso o *schema* das tabelas esta disponível [aqui](/src/model/schema.sql).
 
 Nesta aplicação as tarefas podem ser apagadas e restauradas, para isso foi criado um campo `deleteAt` que marca quando elas foram deletadas e caso seja `null` significa que elas não foram deletadas (ou foram restauradas) permitindo um *soft delete* nas tarefas e *restore*. Isso foi implementado manualmente e não utilizando o `softDelete` do própio typeORM.
 
@@ -251,7 +251,7 @@ Para autenticação foi utilizada uma estrategia de `accessToken` e `refreshToke
 
 Apesar de ambos serem JWT's `accessToken` e `refreshToken` não são intercambiaveis e **DEVEM** ter chaves privadas distintas usar um no lugar do outro é o mesmo que usar uma string aleatória.
 
-Toda vez que um `refreshToken` é gerado, ele é armazenado no banco de dados e toda vez que ele é utilizado em uma operação ele é, além de verificado a assinatura do JWT em sí, verificado se ele estar no banco de dados. permitindo que um usuário se conecte de mais de um dispositivo ao mesmo tempo.
+Toda vez que um `refreshToken` é gerado, ele é armazenado no banco de dados e toda vez que ele é utilizado em uma operação ele é, além de verificado a assinatura do JWT em sí, também é verificado se ele estar no banco de dados. permitindo que um usuário se conecte de mais de um dispositivo ao mesmo tempo.
 
 Ao fazer um logout com `?everywhere=true` todos os `refreshToken` deste usuário são deletados, o que significa que após o `accessToken` de outras sessões expirarem (a.k.a outros `refreshToken` do mesmo usuário), eles teram que fazer o login novamente para poder continuar acessando a API.
 
