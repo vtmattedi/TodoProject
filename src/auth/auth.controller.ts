@@ -6,15 +6,15 @@ import { RegisterUserDto } from './dtos/registeruser.dto';
 import { RefreshTokenService } from './refreshtoken.service';
 import { LoginResultDto } from './dtos/loginresult.dto';
 import { UsersService } from '../users/users.service';
-import { LoginError } from '../users/dto/login.error';
-import { authLogoutPipe } from './pipes/auth.pipes';
-import { RegisterError } from 'src/users/dto/register.error';
+import { LoginError } from '../users/errors/login.error';
+import { authLogoutPipe } from './pipes/authlogout.pipes';
+import { RegisterError } from 'src/users/errors/register.error';
 import { RefreshTokenError } from './errors/refreshtoken.error';
-import { ApiBadRequestResponse, ApiBearerAuth, ApiForbiddenResponse, ApiResponse, ApiTags, ApiUnauthorizedResponse } from '@nestjs/swagger';
-import { BadResponseDto } from 'src/common/dtos/badresponse.dto';
-import { CloseAccountDto } from './dtos/closeaccount.dto';
+import { ApiBearerAuth, ApiOperation, ApiQuery, ApiResponse, ApiTags } from '@nestjs/swagger';
+import { BadResults } from '../common/decorators/badresponse.decorator';
+import { BadAccessResult } from '../common/decorators/badaccess.decorator';
 
-
+// Handles all authentication related requests
 @ApiTags('Authentication')
 @Controller('auth')
 export class AuthController {
@@ -24,7 +24,7 @@ export class AuthController {
     ) {
         //injected dependencies
     }
-
+    // Default error handler for all authentication related errors
     defaultErrorHandler(error: Error): void {
         if (error instanceof HttpException) {
             // If an HttpException is thrown, re-throw it
@@ -90,12 +90,15 @@ export class AuthController {
     // If successful, it returns the userId and accessToken
     // And sets the refresh token in the response s
     @Post('/login')
+    @ApiOperation({ summary: 'Logs in a user.', description: 'Attempts to log in a user using the credentials provided.' })
+    @BadResults()
+    @ApiResponse({ status: HttpStatus.OK, description: 'User logged in successfully.', type: LoginResultDto })
     @UsePipes(new ValidationPipe())
     async login(@Body() body: LoginUserDto, @Res({ passthrough: true }) response: Response): Promise<LoginResultDto> {
         try {
             const res = await this.usersService.login(body.email, body.password);
             console.log('User logged in with id:', res.userId);
-          
+
             response.status(HttpStatus.OK);
             // Return the userId and accessToken
             return {
@@ -113,15 +116,17 @@ export class AuthController {
     // Registers a new user with the provided registration data
     // If successful, it returns the userId, accessToken and refreshToken
     @Post('/register')
+    @ApiOperation({ summary: 'Register a new in a user.', description: 'Registers a new user with the credentials provided. if successful will also login the user.' })
     @UsePipes(new ValidationPipe())
-    @ApiResponse({ status: HttpStatus.OK, description: 'Creates user account and login.', type: LoginResultDto })
+    @BadResults()
+    @ApiResponse({ status: HttpStatus.CREATED, description: 'Creates user account and login.', type: LoginResultDto })
     async register(@Body() body: RegisterUserDto, @Res({ passthrough: true }) response: Response): Promise<LoginResultDto> {
 
         console.log('Registering user with data:', body.email, body.username);
         try {
             const res = await this.usersService.create(body)
             console.log('User registered with id:', res.userId);
-
+            response.status(HttpStatus.CREATED);
             return {
                 userId: res.userId,
                 accessToken: res.accessToken,
@@ -138,11 +143,17 @@ export class AuthController {
     // If the query parameter 'everywhere' is set to true, it will delete all refresh tokens for the user
     // Invalidating all sessions of the user
     @Post('/logout')
+    @ApiOperation({ summary: 'Invalidate a users session.', description: 'Logs out a user using the refreshToken provided. Can logout all the user from all devices.' })
     @ApiBearerAuth()
-    @ApiUnauthorizedResponse({ type: BadResponseDto })
-    @ApiBadRequestResponse({ type: BadResponseDto })
-    @ApiForbiddenResponse({ type: BadResponseDto })
-    @ApiResponse({ status: HttpStatus.OK, description: 'Successfully logged out' })
+    @BadResults()
+    @ApiQuery({
+        name: 'everywhere',
+        description: 'If set to true, will log out from all devices. Default is false.',
+        example: '',
+        required: false,
+        type: Boolean,
+    })
+    @ApiResponse({ status: HttpStatus.OK, description: 'Successfully logged out.', example: { message: 'Logged out successfully from 1 devices', everywhere: false }})
     async logout(@Body() body: { userId: number, refreshToken: string }, @Query('everywhere', authLogoutPipe) everywhere: boolean, @Res({ passthrough: true }) response: Response): Promise<any> {
         //If there is a query parameter 'everywhere' and it is 'true'
         //logout all devices with this user's id
@@ -169,13 +180,11 @@ export class AuthController {
 
     // Refreshes the access token using the refresh token
     @Get('/token')
+    @ApiOperation({ summary: 'Generates a new accessToken.', description: 'Generates a new accessToken using the refreshToken.' })
     @ApiBearerAuth()
-    @ApiUnauthorizedResponse({ description: 'User not identified.', type: BadResponseDto })
-    @ApiBadRequestResponse({ description: 'Bad request payload.', type: BadResponseDto })
-    @ApiForbiddenResponse({ description: 'User does not have permission to access resource.', type: BadResponseDto })
-    @ApiResponse({ status: HttpStatus.OK, description: 'New Access Token Granted', type: LoginResultDto })
-    async token(@Req() request: Request, @Body() body: { userId: number, refreshToken: string }): Promise<any> {
-
+    @BadAccessResult()
+    @ApiResponse({ status: HttpStatus.OK, description: 'New Access Token Granted.', type: LoginResultDto })
+    async token(@Body() body: { userId: number, refreshToken: string }): Promise<any> {
         const refreshToken = body.refreshToken;
         console.log('\x1b[1mToken refresh attempt with user ID:\x1b[0m', body.userId, 'Refresh Token:', refreshToken);
         try {
@@ -194,15 +203,13 @@ export class AuthController {
 
     // Closes the user account and deletes all user's data
     @Delete('/closeaccount')
+    @ApiOperation({ summary: 'Permenently closes an account.', description: 'Permenently closes an account based on the Id of the refreshToken and the user\'s credential. The credentials need to match the user\'s id of the token. This deletes all data of the users in the DB including valid refreshTokens and Tasks.' })
     @UsePipes(new ValidationPipe())
     @ApiBearerAuth()
-    @ApiUnauthorizedResponse({ type: BadResponseDto })
-    @ApiBadRequestResponse({ type: BadResponseDto })
-    @ApiForbiddenResponse({ type: BadResponseDto })
+    @BadAccessResult()
     @ApiResponse({ status: HttpStatus.OK, description: 'Closes User\'s account and deletes his data from DB.', type: LoginResultDto })
-    async closeAccount(@Req() request: Request, @Body() body: CloseAccountDto, @Res({ passthrough: true }) response: Response): Promise<any> {
+    async closeAccount(@Req() request: Request, @Body() body: {refreshToken: string} & LoginUserDto, @Res({ passthrough: true }) response: Response): Promise<any> {
         console.log('Close account attempt with email:', body.email);
-        console.log('\x1b[1mClose account attempt with user ID:\x1b[0m', body.userId, 'Refresh Token:', body.refreshToken);
         // Delete all refresh tokens for the user
         try {
             const userData = await this.usersService.login(body.email, body.password);
@@ -210,14 +217,15 @@ export class AuthController {
             if (decoded.uid !== userData.userId) {
                 throw new RefreshTokenError('Refresh token does not match the user ID');
             }
-            await this.refreshTokenService.deleteAllTokensbyId(decoded.uid);
+            // This will also delete all tasks associated with the user
+            // and all refresh tokens associated with the user
             await this.usersService.remove(decoded.uid);
             response.status(HttpStatus.OK);
             console.log('Account closed successfully for user ID:', decoded.uid);
-            return { message: 'Account closed successfully. All accound data were deleted', userId: decoded.uid };
+            return { message: 'Account closed successfully. All account data were deleted , All Sessions were invalidated.', userId: decoded.uid };
         }
         catch (error) {
-            console.warn('Error closing account:', error);
+            console.warn('Error closing account.');
             this.defaultErrorHandler(error);
         }
     }

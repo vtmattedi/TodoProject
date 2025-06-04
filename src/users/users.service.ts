@@ -6,10 +6,10 @@ import { User } from '../model/entities/user.entity';
 import * as Crypto from 'crypto';
 import { RefreshTokenService } from '../auth/refreshtoken.service'; // Assuming you have a function to create a token
 import { promisify } from 'util';
-import { LoginError } from './dto/login.error';
+import { LoginError } from './errors/login.error';
 import { RegisterUserDto } from 'src/auth/dtos/registeruser.dto';
-import { NewUserDto } from 'src/auth/dtos/newuser.dto';
-import { RegisterError } from './dto/register.error';
+import { LoginResultDto } from 'src/auth/dtos/loginresult.dto';
+import { RegisterError } from './errors/register.error';
 @Injectable()
 export class UsersService {
     constructor(
@@ -23,7 +23,7 @@ export class UsersService {
     // - The user with the provided email does not exist
     // - The provided password does not match the stored password
     // Returns a NewUserDto containing the user ID, access token, and refresh token.
-    async login(email: string, password: string): Promise<NewUserDto> {
+    async login(email: string, password: string): Promise<LoginResultDto> {
         if (!email || !password) {
             throw new LoginError('Email and password are required.');
         }
@@ -48,6 +48,7 @@ export class UsersService {
     
     // Deletes an existing user by ID
     // this will also cascade delete all tasks associated with the user
+    // and all refresh tokens associated with the user
     async remove(id: number): Promise<void> {
         await this.usersRepository.delete(id);
     }
@@ -56,7 +57,7 @@ export class UsersService {
     // Throws a RegisterError if:
     // - A user with the same email already exists
     // - There was an error inserting the user into the database (from typeorm)
-    async create(registrationData: RegisterUserDto): Promise<NewUserDto> {
+    async create(registrationData: RegisterUserDto): Promise<LoginResultDto> {
         //original idea was to try{}catch{} and if we hade already a user with the same email,
         //we would see an error with a code of '23505' which is the unique constraint violation code in PostgreSQL.
         // 

@@ -3,17 +3,18 @@ import { UsePipes, ValidationPipe } from '@nestjs/common';
 import { HttpException, HttpStatus } from '@nestjs/common';
 import { TasksService } from './tasks.service';
 import { Response } from 'express';
-import { count } from 'console';
 import { NewTaskDto } from './dtos/newtask.dto';
-import { EditTaskDto } from './dtos/edittask.dto';
-import { BasicBodyDto } from 'src/common/dtos/basicbody.dto';
-import { Validator } from 'class-validator';
 import { ValidateEditTaskPipe } from './pipes/validateEditTask.pipe';
 import { DbMissSyncError } from './errors/dbmisssync.error';
-import { ApiBearerAuth } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiBody, ApiParam, ApiProperty } from '@nestjs/swagger';
 import { TaskReturnDto } from './dtos/taskreturn.dto';
 import { ValidateTaskFilterPipe } from './pipes/validateTaskFilter.pipe';
 import { TaskFilterDto } from './dtos/taskfilter.dto';
+import { ApiOperation, ApiQuery, ApiResponse } from '@nestjs/swagger';
+import { BadResults } from 'src/common/decorators/badresponse.decorator';
+import { BadTaskAccessResult } from 'src/common/decorators/taskaccess.decorator';
+import { TaskDeleteDto } from './dtos/taskdelete.dto';
+import { EditTaskDto } from './dtos/edittask.dto';
 @Controller('tasks')
 @ApiBearerAuth()
 export class TasksController {
@@ -43,7 +44,7 @@ export class TasksController {
             console.warn('Task asserted in the database was modified.', error);
             throw error; // Rethrow the error to be handled by the global exception filter
         }
-        console.warn('An unexpected error occurred:', error);
+        console.warn('An unexpected error occurred:', error.constructor.name);
         if (process.env.DONT_RECOVER_FROM_ERROR === 'true') {
             // If we do not want to recover from the error
             // rethrow it
@@ -61,6 +62,18 @@ export class TasksController {
     // If a query is provided with a status, it will return only tasks with that status
     // if a bad status is provided, it will be ignored
     @Get()
+    @ApiOperation({ summary: 'Gets all tasks.', description: 'Gets all tasks of the current user (expect deleted ones).' })
+    @ApiBearerAuth()
+    @BadResults()
+    @ApiQuery({
+        name: 'status',
+        description: 'Filter tasks by status. If not provided or invalid status, all tasks will be returned.',
+        example: 'finished',
+        required: false,
+        type: String,
+        enum: ['pending', 'finished'],
+    })
+    @ApiResponse({ status: HttpStatus.OK, description: 'The user\'s tasks.' })
     @UsePipes()
     async getTasks(@Body() body: { userId: number }, @Query(new ValidateTaskFilterPipe()) query: TaskFilterDto): Promise<TaskReturnDto> {
         try {
@@ -79,6 +92,18 @@ export class TasksController {
 
     // Creates a new task
     @Post()
+    @ApiOperation({ summary: 'Creates a new Task.', description: 'Create a new Task with the data in the body of the request if dueDate is not present it will be set to null, representing no due date, However if it is present it must not be in the past.' })
+    @ApiBearerAuth()
+    @BadResults()
+    @ApiQuery({
+        name: 'status',
+        description: 'Filter tasks by status. If not provided or invalid status, all tasks will be returned.',
+        example: 'finished',
+        required: false,
+        type: String,
+        enum: ['pending', 'finished'],
+    })
+    @ApiResponse({ status: HttpStatus.CREATED, description: 'The created task.', type: TaskReturnDto })
     @UsePipes(new ValidationPipe())
     async createTask(@Body() body: NewTaskDto, @Res({ passthrough: true }) response: Response): Promise<TaskReturnDto> {
         // Lazy validation of dueDate
@@ -107,12 +132,22 @@ export class TasksController {
 
     // Edit a task by its ID
     @Put(':id')
+    @ApiOperation({ summary: 'Edits an existing task.', description: 'Edits the task with id provided in the path and the new values as the request body. You only need to pass what you want to update but at least one field must be present. If the user does not own the task, it is marked as deleted or the task does not exists it will return an error.' })
+    @ApiBearerAuth()
+    @BadTaskAccessResult()
+    @ApiParam({
+        name: 'id',
+        description: 'The ID of the task to update.',
+        example: 1,
+        required: true,
+        type: Number,
+    })
+    @ApiResponse({ status: HttpStatus.OK, description: 'The edited task.', type: TaskReturnDto })
     @UsePipes()
-    async updateTask(@Param('id', ParseIntPipe) taskId: number, @Body(new ValidateEditTaskPipe()) body: any): Promise<TaskReturnDto> {
+    async updateTask(@Param('id', ParseIntPipe) taskId: number, @Body(new ValidateEditTaskPipe()) body: EditTaskDto): Promise<TaskReturnDto> {
         console.log('Updating task with ID:', taskId, 'for user ID:', body.userId);
         try {
             await this.tasksService.amIOwner(taskId, body.userId);// Check if the user can modify the task
-            console.log('Updating task with ID:', taskId, 'for user ID:', body.userId);
             // At this point we know:
             // 1. The taskId is a valid number
             // 2. The task exists
@@ -134,7 +169,11 @@ export class TasksController {
     }
     // Returns all tasks that are soft-deleted for a specific user
     @Get('deleted')
-    async getdeletedTasks(@Body() body: any): Promise<any> {
+    @ApiOperation({ summary: 'Gets the deleted tasks.', description: 'Gets all deleted tasks by the user.' })
+    @ApiBearerAuth()
+    @BadTaskAccessResult()
+    @ApiResponse({ status: HttpStatus.OK, description: 'The deleted tasks.', type: TaskReturnDto })
+    async getdeletedTasks(@Body() body: { userId: number }): Promise<TaskReturnDto> {
         const res = await this.tasksService.findDeletedByUserId(body.userId);
         return {
             count: res.length,
@@ -144,15 +183,26 @@ export class TasksController {
 
     // Delete a task by its ID (soft delete)
     @Delete(':id')
+    @ApiOperation({ summary: 'Deletes an existing task.', description: 'Edits the task with id provideded in the path. ' })
+    @ApiBearerAuth()
+    @BadTaskAccessResult()
+    @ApiParam({
+        name: 'id',
+        description: 'The ID of the task to delete.',
+        example: 1,
+        required: true,
+        type: Number,
+    })
+    @ApiResponse({ status: HttpStatus.OK, description: 'The deleted task.', type: TaskDeleteDto })
     @UsePipes(new ValidationPipe())
-    async deleteTask(@Param('id', ParseIntPipe) taskId: any, @Body() body: BasicBodyDto): Promise<any> {
+    async deleteTask(@Param('id', ParseIntPipe) taskId: number, @Body() body: { userId: number }): Promise<TaskDeleteDto> {
         try {
             await this.tasksService.amIOwner(taskId, body.userId);// Check if the user can modify the task
             // After ^ we know that task exists and user is the owner of the task and it is not deleted
             console.log('Deleting task with ID:', taskId);
             const deleted = await this.tasksService.softDelete(taskId);
             return {
-                message: 'Task deleted successfully',
+                message: `Task with ID: ${taskId} has been deleted.`,
                 count: deleted.affected,
             }
         }
@@ -163,14 +213,25 @@ export class TasksController {
     }
 
     @Put('restore/:id')
-    async restoreTask(@Param('id', ParseIntPipe) taskId: number, @Body() body: BasicBodyDto): Promise<any> {
+    @ApiOperation({ summary: 'Restores a deleted task.', description: 'Restores a deleted task by the task ID provided in the path. If the Task was not deleted if has no effect.' })
+    @ApiBearerAuth()
+    @BadTaskAccessResult()
+    @ApiParam({
+        name: 'id',
+        description: 'The ID of the task to delete.',
+        example: 1,
+        required: true,
+        type: Number,
+    })
+    @ApiResponse({ status: HttpStatus.OK, description: 'The deleted task.', type: TaskDeleteDto })
+    async restoreTask(@Param('id', ParseIntPipe) taskId: number,@Body() body: { userId: number }): Promise<TaskDeleteDto> {
         console.log('Restoring task with ID:', taskId, 'for user ID:', body.userId);
-        await this.tasksService.amIOwner(taskId, body.userId, true); // Check if the user can restore the task
-        // After ^ we know that task exists and user is the owner of the task
         try {
+            await this.tasksService.amIOwner(taskId, body.userId, true); // Check if the user can restore the task
+            // After ^ we know that task exists and user is the owner of the task
             const restored = await this.tasksService.restore(taskId);
             return {
-                message: 'Task restored successfully',
+                message: `Task with ID: ${taskId} has been restored.`,
                 count: restored.affected,
             }
         }

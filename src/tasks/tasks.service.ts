@@ -122,6 +122,7 @@ export class TasksService {
     }
 
     // Update an existing task with the provided data
+    // Modifies the task's updatedAt field automatically
     async update(taskDto: EditTaskDto): Promise<Task> {
         const task = await this.findOne(taskDto.taskId);
         // by calling amIOwner we ensure that the task exists and the user is the owner
@@ -139,7 +140,7 @@ export class TasksService {
             task.description = taskDto.description;
         if (taskDto.status)
             task.status = taskDto.status;
-
+        task.updatedAt = new Date(); // Update the updatedAt field to the current date
         // Task already exists, so save will update the existing task
         // Useful since we may be updating only one field at a time
         return this.tasksRepository.save(task);

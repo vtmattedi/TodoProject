@@ -1,12 +1,10 @@
 import { Module } from '@nestjs/common';
-import { AppController } from './app.controller';
-import { AppService } from './app.service';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { User } from './model/entities/user.entity';
 import { RefreshToken } from './model/entities/refreshtokens.entity';
 import { Task } from './model/entities/tasks.entity';
 import { ConfigModule } from '@nestjs/config';
-// import { UsersModule } from './test/test.module';
+import { UsersModule } from './users/users.module';
 import { AuthModule } from './auth/auth.module';
 import { TasksModule } from './tasks/tasks.module';
 @Module({
@@ -23,7 +21,8 @@ import { TasksModule } from './tasks/tasks.module';
       synchronize: true,
     }),
     AuthModule,
-    TasksModule
+    TasksModule,
+    UsersModule,
   ],
 })
 export class AppModule { }
