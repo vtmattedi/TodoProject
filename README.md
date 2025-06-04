@@ -67,9 +67,8 @@ Para o correto funcionamento é nescessario que os seguintes dados estejam prese
 * `JWT_ACCESS_TOKEN_EXPIRES`: Tempo para que o token de acesso seja válidos. Deve ser no formato 'num''unit' então algo como '72h' ou '15m'. (Sugestão: 15m).
 * `JWT_REFRESH_TOKEN_EXPIRES`: Tempo para que o *refresh* token seja válido. Deve ser no formato 'num''unit' então algo como '72h' ou '15m'.(Sugestão: 72h).
 * `NODE_ENV`: `production` ou `development`. Em *development* alguma informações extra são expostas tais como motivo da falha do login.
-* `DONT_RECOVER_FROM_ERROR`: `fasle` ou `true`
-  LOG_ROUTING_ERRORS = `true` ou `false`. Imprime os erros capturados
-
+* `DONT_RECOVER_FROM_ERROR`: `false` ou `true`. Se for `true` erros *INESPERADOS* encontrados durante a responsta não são tratados. Caso contrario jogaram um erro http com codigo 500, capturado pelo NestJS.
+* `LOG_ROUTING_ERRORS` = `true` ou `false`. Imprime os erros capturados durante o roteamento.
 `
 Para gerar um Salt ou JWT secret pode ser utilizado:
 
