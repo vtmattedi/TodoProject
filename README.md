@@ -41,13 +41,14 @@ git clone https://github.com/vtmattedi/TodoProject
     npm install
 ```
 
-Caso não tenha o nestJS instalado globalmente, é recomendado utilizar:
+Caso não tenha o NestJS cli instalado globalmente, é recomendado utilizar:
 
 ```Bash
     npm install -g @nestjs/cli
 ```
+4. Tenha acesso a um banco de dados PostgreSQL.
 
-4. Além disso é nescessario que o banco de dados esteja funcionando e que as credenciaias estejam no arquivo `.env`.
+5. Além disso é nescessario que o banco de dados esteja funcionando e que as credenciaias estejam no arquivo `.env`.
 
 #### Configurando o Environment
 
@@ -67,7 +68,7 @@ Para o correto funcionamento é nescessario que os seguintes dados estejam prese
 * `JWT_ACCESS_TOKEN_EXPIRES`: Tempo para que o token de acesso seja válidos. Deve ser no formato 'num''unit' então algo como '72h' ou '15m'. (Sugestão: 15m).
 * `JWT_REFRESH_TOKEN_EXPIRES`: Tempo para que o *refresh* token seja válido. Deve ser no formato 'num''unit' então algo como '72h' ou '15m'.(Sugestão: 72h).
 * `NODE_ENV`: `production` ou `development`. Em *development* alguma informações extra são expostas tais como motivo da falha do login.
-* `DONT_RECOVER_FROM_ERROR`: `false` ou `true`. Se for `true` erros *INESPERADOS* encontrados durante a responsta não são tratados. Caso contrario jogaram um erro http com codigo 500, capturado pelo NestJS.
+* `DONT_RECOVER_FROM_ERROR`: `false` ou `true`. Se for `true` erros *inesperados* encontrados durante a responsta não são tratados (são jogados novamente). Caso contrario, é jogado um erro http com codigo 500, capturado pelo NestJS.
 * `LOG_ROUTING_ERRORS` = `true` ou `false`. Imprime os erros capturados durante o roteamento.
 `
 Para gerar um Salt ou JWT secret pode ser utilizado:
@@ -118,7 +119,7 @@ Este aquivo contém 1 documento no qual contém:
   * Misc: Rotas miscelâneas de uitlidade.
   * Flow: Conjunto de *requests* com flows para testar utilização da aplicação.
 
-Para testar:
+Para testar utilizando o insomnia:
 
 * Caso não esteja rodando no `localhost:3000`:
   * Configure as variaveis de ambiente, a `base_url` deve conter a url da apricação rodado e a variavel `protocol` deve conter http ou https. Isso está pré configurado para localhost:3000
