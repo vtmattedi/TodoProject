@@ -172,7 +172,7 @@ Disto receberemos dois tokens um `accessToken`e um `refreshToken` e precisamos u
 Para ver, editar, criar e deletar as tarefas, precisamos enviar na requisição, um *header* `authorization` com valor: `Bearer <acessToken>`.
 
 Caso a resposta tenha status 401 podemos enviar uma requisição contendo um *header* `authorization` com valor: `Bearer <refreshToken>`
-para `/auth/token` e receberemos um novo `accessToken`caso nosso `refreshToken` seja válidos, e podemos continuar manipulando as tarefas deste usuario.
+para `/auth/token` e receberemos um novo `accessToken`caso nosso `refreshToken` seja válidos, e podemos continuar manipulando as tarefas deste usuário.
 
 Após isso é possivel deslogar, ou apagar a conta criada, novamente enviando um header com seu `refreshToken`
 
@@ -247,7 +247,7 @@ Além disso o campo `dueDate`, que determina a data limite de cada tarefa, poré
 
 ##### Autenticação
 
-Para autenticação foi utilizada uma estrategia de `accessToken` e `refreshToken` onde o usuario recebe ao fazer login um token de cada. O `accessToken` é um JWT de curta duração que permite que o usuario acesse o banco de dados até o fim da duração delete. Enquanto isso o `refreshToken` atua quase que como um token de sessão, ele tem duração bem mais alta e permite que o usuario gere novos `accessToken` e que faça operações de logout ou de fechar a conta.
+Para autenticação foi utilizada uma estrategia de `accessToken` e `refreshToken` onde o usuário recebe ao fazer login um token de cada. O `accessToken` é um JWT de curta duração que permite que o usuário acesse o banco de dados até o fim da duração delete. Enquanto isso o `refreshToken` atua quase que como um token de sessão, ele tem duração bem mais alta e permite que o usuário gere novos `accessToken` e que faça operações de logout ou de fechar a conta.
 
 Apesar de ambos serem JWT's `accessToken` e `refreshToken` não são intercambiaveis e **DEVEM** ter chaves privadas distintas usar um no lugar do outro é o mesmo que usar uma string aleatória.
 
@@ -281,7 +281,7 @@ Um usuário pode fechar sua propia conta fornecendo seu `refreshToken` e suas no
 ### Melhorias futuras:
 
 Para este projeto temos algumas melhorias que podem ser feitas:
-* Adicionar válidação de email para cadastro de usuarios.
+* Adicionar válidação de email para cadastro de usuários.
 * Adicionar mais filtros possiveis para buscar tarefas (e as deletadas), especialmente para que retorne um numero especifico de tarefas começando de um offset.
 * Criar CronJob para retirar refreshTokens invalidos do banco de dados.
 * Criar CronJob para deletar permanentemente tarefas marcadas como deletadas no banco de dados e alterar o status para `late` de tarefas atrasadas.
