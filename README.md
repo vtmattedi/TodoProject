@@ -282,11 +282,11 @@ Um usuário pode fechar sua propia conta fornecendo seu `refreshToken` e suas no
 ### Melhorias futuras:
 
 Para este projeto temos algumas melhorias que podem ser feitas:
-
-* Trasnformar os refreshTokens em cookies ~~este era o projeto inicial mas não esteva funcionando com o insomnia apesar de funcionar no postman~~.
+* Adicionar válidação de email para cadastro de usuarios.
 * Adicionar mais filtros possiveis para buscar tarefas (e as deletadas), especialmente para que retorne um numero especifico de tarefas começando de um offset.
 * Criar CronJob para retirar refreshTokens invalidos do banco de dados.
 * Criar CronJob para deletar permanentemente tarefas marcadas como deletadas no banco de dados e alterar o status para `late` de tarefas atrasadas.
 * Implementar um usúario admin que tenha acesso a outros usuários e tarefas.
 * ~~Fora do escopo de backend mas implementar um front, mesmo que, simples para que possa ser testado o aplicativo diretamete.~~
 * Escrever os testes unitarios pra as unidades mais importantes.
+* Trasnformar os refreshTokens em cookies ~~este era o projeto inicial mas não esteva funcionando com o insomnia apesar de funcionar no postman~~.
